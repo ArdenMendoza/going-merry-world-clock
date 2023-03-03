@@ -132,7 +132,7 @@ const ClockTile = ({
   return (
     <div style={{margin: '10px 0px 10px 0px'}}>
       <div>{location}</div>
-      {liveTime && <div>{liveTime.toLocaleTimeString()}</div>}
+      {liveTime && <div>{liveTime.toLocaleTimeString("en-GB")}</div>}
       {`${Math.abs(mainTimeZoneDiff)} ${Math.abs(mainTimeZoneDiff) > 1 ? 'hours' : 'hour'} ${
         mainTimeZoneDiff > 0 ? 'ahead' : 'behind'
       } of ${mainTimezoneCity}`}
