@@ -7,6 +7,8 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
+  MenuItem,
+  Select,
   TextField,
 } from "@mui/material";
 import type { NextPage } from "next";
@@ -78,9 +80,13 @@ const Home: NextPage = () => {
             <AddCircleOutline />
           </IconButton>
           <AddClockDialog
+            key={JSON.stringify(clocks)}
             isOpen={isAddModalOpen}
             onClose={() => setIsAddModalOpen(false)}
-            onConfirm={(newClock: ClockModel) => console.log({ newClock })}
+            onConfirm={(newClock: ClockModel) => {
+              return setClocks([...clocks, newClock]);
+            }}
+            existingClocks={clocks}
           />
         </>
       )}
@@ -94,45 +100,99 @@ const AddClockDialog = ({
   isOpen,
   onClose,
   onConfirm,
+  existingClocks,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (newClock: ClockModel) => void;
+  existingClocks: ClockModel[];
 }) => {
+  const allowedCities = React.useMemo(
+    () =>
+      [
+        {
+          value: { area: "Asia", city: "Singapore" },
+          label: "Singapore (Asia/Singapore)",
+        },
+        { value: { area: "Asia", city: "Tokyo" }, label: "Tokyo (Asia/Tokyo)" },
+        { value: { area: "Asia", city: "Seoul" }, label: "Seoul (Asia/Seoul)" },
+        {
+          value: { area: "Australia", city: "Melbourne" },
+          label: "Melbourne (Australia/Melbourne)",
+        },
+        {
+          value: { area: "Australia", city: "Sydney" },
+          label: "Sydney (Australia/Sydney)",
+        },
+        {
+          value: { area: "Europe", city: "London" },
+          label: "London (Europe/London)",
+        },
+        {
+          value: { area: "Europe", city: "Paris" },
+          label: "Paris (Europe/Paris)",
+        },
+        {
+          value: { area: "Europe", city: "Berlin" },
+          label: "Berlin (Europe/Berlin)",
+        },
+        {
+          value: { area: "America", city: "New_York" },
+          label: "New York (America/New_York)",
+        },
+        {
+          value: { area: "America", city: "Los_Angeles" },
+          label: "Los Angeles (America/Los_Angeles)",
+        },
+      ].filter(
+        (f) => !existingClocks.map((m) => m.location).includes(f.value.city)
+      ),
+    [existingClocks]
+  );
+
   const [newClock, setNewClock] = React.useReducer(
     (current: ClockModel, update: Partial<ClockModel>) => ({
       ...current,
       ...update,
     }),
-    new ClockModel("", "")
+    new ClockModel(allowedCities[0].value.area, allowedCities[0].value.city)
   );
+
   return (
-    <Dialog open={isOpen} onClose={onClose}>
+    <Dialog open={isOpen} onClose={onClose} fullWidth>
       <DialogTitle>{"Add a new clock"}</DialogTitle>
       <DialogContent>
-        <TextInput
-          label={"Continent"}
-          value={newClock.area}
-          onChange={(newValue) => setNewClock({ area: newValue })}
-          autoFocus
-        />
-        <TextInput
-          label={"City"}
-          value={newClock.location}
-          onChange={(newValue) => setNewClock({ location: newValue })}
-        />
-        <TextInput
-          label={"Region"}
-          value={newClock.region}
-          onChange={(newValue) => setNewClock({ region: newValue })}
-        />
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          placeholder={"City"}
+          value={newClock.location ?? allowedCities[0].value.city}
+          onChange={(selected) => {
+            const selectedCity = allowedCities.find(
+              (f) => f.value.city === selected.target.value
+            )?.value;
+            selectedCity &&
+              setNewClock({
+                area: selectedCity.area,
+                location: selectedCity.city,
+              });
+          }}
+          fullWidth
+        >
+          {allowedCities.map((m) => (
+            <MenuItem key={m.label} value={m.value.city}>
+              {m.label}
+            </MenuItem>
+          ))}
+        </Select>
+        {/* <TextField id="outlined-basic" label="Outlined" variant="outlined" value={} /> */}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
         <Button
           onClick={() => {
             onConfirm(newClock);
-            setNewClock(new ClockModel());
+            setNewClock(allowedCities[0].value);
             onClose();
           }}
         >
@@ -140,31 +200,5 @@ const AddClockDialog = ({
         </Button>
       </DialogActions>
     </Dialog>
-  );
-};
-
-const TextInput = ({
-  label,
-  value,
-  onChange,
-  autoFocus,
-}: {
-  label: string;
-  value: string | undefined;
-  onChange: (newValue: string) => void;
-  autoFocus?: boolean;
-}) => {
-  return (
-    <TextField
-      autoFocus={autoFocus}
-      margin="normal"
-      id="area"
-      label={label}
-      type="text"
-      fullWidth
-      variant="standard"
-      value={value ?? ""}
-      onChange={(newValue) => onChange(newValue.currentTarget.value)}
-    />
   );
 };
