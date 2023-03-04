@@ -1,9 +1,10 @@
-import type { NextPage } from 'next';
-import Head from 'next/head';
-import Image from 'next/image';
-import React from 'react';
-import styles from '../styles/Home.module.css';
-import { Card } from '@mui/material'
+import type { NextPage } from "next";
+import Head from "next/head";
+import Image from "next/image";
+import React from "react";
+import styles from "../styles/Home.module.css";
+import { Card } from "@mui/material";
+import { ClockModel, ClockTile } from "../components/ClockTile";
 
 const Home: NextPage = () => {
   const [fetchedMainTime, setFetchedMainTime] = React.useState<
@@ -11,19 +12,24 @@ const Home: NextPage = () => {
   >();
   const [utcOffset, setUtcOffset] = React.useState<number>(0);
   const [liveTime, setLiveTime] = React.useState<Date | undefined>();
+  const [clocks, setClocks] = React.useState<ClockModel[]>([
+    new ClockModel("Asia", "Chita", undefined, "Chita label"),
+    new ClockModel("Asia", "Magadan", undefined, "Magadan label"),
+    new ClockModel("America", "Mexico_City", undefined, "Mexico_City label"),
+  ]);
 
-  const area = 'Asia';
-  const location = 'Manila';
+  const area = "Asia";
+  const location = "Manila";
 
   React.useEffect(() => {
     const asyncFetch = async () => {
-      let fetchUrl = 'https://worldtimeapi.org/api/timezone';
+      let fetchUrl = "https://worldtimeapi.org/api/timezone";
       fetchUrl = `${fetchUrl}/${area}/${location}`;
       await fetch(fetchUrl)
         .then((res) => res.json())
         .then((res: any) => {
-          setFetchedMainTime(new Date(res['utc_datetime']));
-          setUtcOffset(parseInt(res['utc_offset']));
+          setFetchedMainTime(new Date(res["utc_datetime"]));
+          setUtcOffset(parseInt(res["utc_offset"]));
         });
     };
     asyncFetch(); // Execute only once (if there is no myCityTime value)
@@ -48,95 +54,17 @@ const Home: NextPage = () => {
         {liveTime && <div>{liveTime.toLocaleTimeString()}</div>}
         <div>{utcOffset}</div>
       </div>
-      <ClockTile
-        area={'Asia'}
-        location={'Chita'}
-        mainTimezoneCity={location}
-        mainTimezoneUtcOffset={utcOffset}
-      />
-      <ClockTile
-        area={'Asia'}
-        location={'Magadan'}
-        mainTimezoneCity={location}
-        mainTimezoneUtcOffset={utcOffset}
-      />
-      <ClockTile
-        area={'America'}
-        location={'Mexico_City'}
-        mainTimezoneCity={location}
-        mainTimezoneUtcOffset={utcOffset}
-      />
+      {clocks.map((m) => (
+        <ClockTile
+          area={m.area}
+          location={m.location}
+          shortLabel={m.shortLabel}
+          mainTimezoneCity={location}
+          mainTimezoneUtcOffset={utcOffset}
+        />
+      ))}
     </div>
   );
 };
 
 export default Home;
-
-const ClockTile = ({
-  area,
-  location,
-  region,
-  shortLabel: shortLabel,
-  mainTimezoneCity,
-  mainTimezoneUtcOffset,
-}: {
-  area: string;
-  location: string;
-  region?: string;
-  shortLabel?: string;
-  mainTimezoneCity: string;
-  mainTimezoneUtcOffset: number;
-}) => {
-  const [fetchedTime, setFetchedTime] = React.useState<Date | undefined>();
-  const [details, setDetails] = React.useState<{
-    shortLabel?: string;
-    city?: string;
-    abbreviation?: string;
-    utcOffset?: number;
-  }>({});
-  const [liveTime, setLiveTime] = React.useState<Date | undefined>();
-
-  React.useEffect(() => {
-    const asyncFetch = async () => {
-      let fetchUrl = 'https://worldtimeapi.org/api/timezone';
-      fetchUrl = `${fetchUrl}/${area}/${location}${region ? '/' + region : ''}`;
-      await fetch(fetchUrl)
-        .then((res) => res.json())
-        .then((res: any) => {
-          setFetchedTime(new Date(res['datetime'].slice(0, -6)));
-          setDetails({
-            shortLabel,
-            city: location,
-            abbreviation: res['abbreviation'],
-            utcOffset: parseInt(res['utc_offset']),
-          });
-        });
-    };
-    asyncFetch(); // Execute only once (if there is no myCityTime value)
-  }, []);
-
-  React.useEffect(() => {
-    if (fetchedTime) {
-      let seconds = 1;
-      console.log(location, fetchedTime.toLocaleString());
-      setInterval(() => {
-        let updatedTime = new Date(fetchedTime.toString());
-        updatedTime.setSeconds(updatedTime.getSeconds() + seconds);
-        setLiveTime(updatedTime);
-        seconds++;
-      }, 1000);
-    }
-  }, [fetchedTime]);
-
-  const mainTimeZoneDiff = (details.utcOffset ?? 0) - mainTimezoneUtcOffset;
-
-  return (
-    <Card style={{ margin: '10px 0px 10px 0px' }}>
-      <div>{location}</div>
-      {liveTime && <div>{liveTime.toLocaleTimeString('en-GB')}</div>}
-      <div>{details.abbreviation}</div>
-      {`${Math.abs(mainTimeZoneDiff)} ${Math.abs(mainTimeZoneDiff) > 1 ? 'hours' : 'hour'
-        } ${mainTimeZoneDiff > 0 ? 'ahead' : 'behind'} of ${mainTimezoneCity}`}
-    </Card>
-  );
-};
