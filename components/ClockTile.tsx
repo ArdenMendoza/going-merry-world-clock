@@ -92,7 +92,7 @@ export const ClockTile = ({
         onMouseEnter={() => setIsDeleteShown(true)}
         onMouseLeave={() => setIsDeleteShown(false)}
       >
-        <div>{location}</div>
+        <div>{location.replace("_", " ")}</div>
         <div>{shortLabel}</div>
         {liveTime && <div>{liveTime.toLocaleTimeString("en-GB")}</div>}
         <div>{details.abbreviation}</div>
