@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import React from 'react';
 import styles from '../styles/Home.module.css';
+import { Card } from '@mui/material'
 
 const Home: NextPage = () => {
   const [fetchedMainTime, setFetchedMainTime] = React.useState<
@@ -130,13 +131,12 @@ const ClockTile = ({
   const mainTimeZoneDiff = (details.utcOffset ?? 0) - mainTimezoneUtcOffset;
 
   return (
-    <div style={{ margin: '10px 0px 10px 0px' }}>
+    <Card style={{ margin: '10px 0px 10px 0px' }}>
       <div>{location}</div>
       {liveTime && <div>{liveTime.toLocaleTimeString('en-GB')}</div>}
       <div>{details.abbreviation}</div>
-      {`${Math.abs(mainTimeZoneDiff)} ${
-        Math.abs(mainTimeZoneDiff) > 1 ? 'hours' : 'hour'
-      } ${mainTimeZoneDiff > 0 ? 'ahead' : 'behind'} of ${mainTimezoneCity}`}
-    </div>
+      {`${Math.abs(mainTimeZoneDiff)} ${Math.abs(mainTimeZoneDiff) > 1 ? 'hours' : 'hour'
+        } ${mainTimeZoneDiff > 0 ? 'ahead' : 'behind'} of ${mainTimezoneCity}`}
+    </Card>
   );
 };
