@@ -3,10 +3,12 @@ import {
   Button,
   Dialog,
   DialogActions,
-  DialogContent, DialogTitle,
+  DialogContent,
+  DialogTitle,
   IconButton,
   MenuItem,
-  Select
+  Select,
+  TextField,
 } from "@mui/material";
 import type { NextPage } from "next";
 import React from "react";
@@ -55,10 +57,16 @@ const Home: NextPage = () => {
     <div className={styles.container}>
       <div>
         <div>{location}</div>
-        {liveTime && <div>{liveTime.toLocaleTimeString('en-GB')}</div>}
-        <div>{utcOffset}</div>
+        {liveTime && <div>{liveTime.toLocaleTimeString("en-GB")}</div>}
       </div>
-      <div style={{ display: "flex", gap: 20}}>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 20,
+          justifyContent: "center",
+        }}
+      >
         {clocks.map((m) => (
           <ClockTile
             area={m.area}
@@ -66,13 +74,16 @@ const Home: NextPage = () => {
             shortLabel={m.shortLabel}
             mainTimezoneCity={location}
             mainTimezoneUtcOffset={utcOffset}
+            onDelete={(city) =>
+              setClocks(clocks.filter((f) => f.location !== city))
+            }
           />
         ))}
       </div>
       {clocks.length < 4 && (
         <>
-          <IconButton onClick={() => setIsAddModalOpen(true)}>
-            <AddCircleOutline />
+          <IconButton size={"large"} onClick={() => setIsAddModalOpen(true)}>
+            <AddCircleOutline fontSize={"large"} />
           </IconButton>
           <AddClockDialog
             key={JSON.stringify(clocks)}
@@ -156,7 +167,9 @@ const AddClockDialog = ({
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth>
       <DialogTitle>{"Add a new clock"}</DialogTitle>
-      <DialogContent>
+      <DialogContent
+        style={{ display: "flex", flexDirection: "column", gap: 20 }}
+      >
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
@@ -180,7 +193,14 @@ const AddClockDialog = ({
             </MenuItem>
           ))}
         </Select>
-        {/* <TextField id="outlined-basic" label="Outlined" variant="outlined" value={} /> */}
+        <TextField
+          id="outlined-basic"
+          label="Outlined"
+          variant="outlined"
+          value={newClock.shortLabel}
+          inputProps={{ maxLength: 20 }}
+          onChange={(el) => setNewClock({ shortLabel: el.target.value })}
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>

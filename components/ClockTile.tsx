@@ -1,5 +1,6 @@
-import { Card } from "@mui/material";
+import { Card, IconButton, Skeleton } from "@mui/material";
 import React from "react";
+import { Delete } from "@mui/icons-material";
 
 export class ClockModel {
   constructor(
@@ -10,18 +11,16 @@ export class ClockModel {
   ) {}
 }
 
-class ClockTileModel extends ClockModel {
-  constructor(
-    area: string,
-    location: string,
-    public mainTimezoneCity: string,
-    public mainTimezoneUtcOffset: number,
-    region?: string,
-    shortLabel?: string
-  ) {
-    super(area, location, region, shortLabel);
-  }
+interface ClockTileModel extends ClockModel {
+  area: string;
+  location: string;
+  mainTimezoneCity: string;
+  mainTimezoneUtcOffset: number;
+  region?: string;
+  shortLabel?: string;
+  onDelete?: (location: string) => void;
 }
+
 export const ClockTile = ({
   area,
   location,
@@ -29,6 +28,7 @@ export const ClockTile = ({
   shortLabel,
   mainTimezoneCity,
   mainTimezoneUtcOffset,
+  onDelete,
 }: ClockTileModel) => {
   const [fetchedTime, setFetchedTime] = React.useState<Date | undefined>();
   const [details, setDetails] = React.useState<{
@@ -38,6 +38,7 @@ export const ClockTile = ({
     utcOffset?: number;
   }>({});
   const [liveTime, setLiveTime] = React.useState<Date | undefined>();
+  const [isDeleteShown, setIsDeleteShown] = React.useState(false);
 
   React.useEffect(() => {
     const asyncFetch = async () => {
@@ -72,15 +73,50 @@ export const ClockTile = ({
 
   const mainTimeZoneDiff = (details.utcOffset ?? 0) - mainTimezoneUtcOffset;
 
-  return (
-    <Card style={{ margin: "10px 0px 10px 0px", padding: 10 }}>
-      <div>{location}</div>
-      <div>{shortLabel}</div>
-      {liveTime && <div>{liveTime.toLocaleTimeString("en-GB")}</div>}
-      <div>{details.abbreviation}</div>
-      {`${Math.abs(mainTimeZoneDiff)} ${
-        Math.abs(mainTimeZoneDiff) > 1 ? "hours" : "hour"
-      } ${mainTimeZoneDiff > 0 ? "ahead" : "behind"} of ${mainTimezoneCity}`}
+  const height = "10em";
+  const width = "20em";
+  const cardStyles = {
+    margin: "10px 0px 10px 0px",
+    padding: "1em",
+    height,
+    width,
+    display: "flex",
+    flexDirection: "row",
+    gap: 5,
+  } as React.CSSProperties;
+
+  return liveTime ? (
+    <Card style={cardStyles}>
+      <div
+        style={{ flex: 1 }}
+        onMouseEnter={() => setIsDeleteShown(true)}
+        onMouseLeave={() => setIsDeleteShown(false)}
+      >
+        <div>{location}</div>
+        <div>{shortLabel}</div>
+        {liveTime && <div>{liveTime.toLocaleTimeString("en-GB")}</div>}
+        <div>{details.abbreviation}</div>
+        {`${Math.abs(mainTimeZoneDiff)} ${
+          Math.abs(mainTimeZoneDiff) > 1 ? "hours" : "hour"
+        } ${mainTimeZoneDiff > 0 ? "ahead" : "behind"} of ${mainTimezoneCity}`}
+      </div>
+      <div style={{ width: 0 }}>
+        <IconButton
+          onMouseEnter={() => setIsDeleteShown(true)}
+          onMouseLeave={() => setIsDeleteShown(false)}
+          style={{ display: isDeleteShown ? "flex" : "none", left: -35 }}
+          size={"medium"}
+          onClick={() => onDelete && onDelete(location)}
+        >
+          <Delete fontSize={"medium"} />
+        </IconButton>
+      </div>
     </Card>
+  ) : (
+    <Skeleton
+      style={{ ...cardStyles }}
+      sx={{ bgcolor: "grey.500" }}
+      variant="rounded"
+    />
   );
 };
