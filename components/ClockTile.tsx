@@ -4,8 +4,8 @@ import React from "react";
 
 export class ClockModel {
   constructor(
-    public area: string,
-    public location: string,
+    public area?: string,
+    public location?: string,
     public region?: string,
     public shortLabel?: string
   ) {}
@@ -44,6 +44,7 @@ export const ClockTile = ({
     const asyncFetch = async () => {
       let fetchUrl = "https://worldtimeapi.org/api/timezone";
       fetchUrl = `${fetchUrl}/${area}/${location}${region ? "/" + region : ""}`;
+      console.log({ fetchUrl });
       await fetch(fetchUrl)
         .then((res) => res.json())
         .then((res: any) => {
