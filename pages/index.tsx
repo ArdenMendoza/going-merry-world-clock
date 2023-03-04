@@ -3,13 +3,10 @@ import {
   Button,
   Dialog,
   DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
+  DialogContent, DialogTitle,
   IconButton,
   MenuItem,
-  Select,
-  TextField,
+  Select
 } from "@mui/material";
 import type { NextPage } from "next";
 import React from "react";
@@ -58,7 +55,7 @@ const Home: NextPage = () => {
     <div className={styles.container}>
       <div>
         <div>{location}</div>
-        {liveTime && <div>{liveTime.toLocaleTimeString()}</div>}
+        {liveTime && <div>{liveTime.toLocaleTimeString('en-GB')}</div>}
         <div>{utcOffset}</div>
       </div>
       <div style={{ display: "flex", gap: 20}}>
