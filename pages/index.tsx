@@ -22,11 +22,7 @@ const Home: NextPage = () => {
   >();
   const [utcOffset, setUtcOffset] = React.useState<number>(0);
   const [liveTime, setLiveTime] = React.useState<Date | undefined>();
-  const [clocks, setClocks] = React.useState<ClockModel[]>([
-    // new ClockModel("Asia", "Chita", undefined, "Chita label"),
-    // new ClockModel("Asia", "Magadan", undefined, "Magadan label"),
-    // new ClockModel("America", "Mexico_City", undefined, "Mexico_City label"),
-  ]);
+  const [clocks, setClocks] = React.useState<ClockModel[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
 
   const area = "Asia";
@@ -65,15 +61,17 @@ const Home: NextPage = () => {
         {liveTime && <div>{liveTime.toLocaleTimeString()}</div>}
         <div>{utcOffset}</div>
       </div>
-      {clocks.map((m) => (
-        <ClockTile
-          area={m.area}
-          location={m.location}
-          shortLabel={m.shortLabel}
-          mainTimezoneCity={location}
-          mainTimezoneUtcOffset={utcOffset}
-        />
-      ))}
+      <div style={{ display: "flex", gap: 20}}>
+        {clocks.map((m) => (
+          <ClockTile
+            area={m.area}
+            location={m.location}
+            shortLabel={m.shortLabel}
+            mainTimezoneCity={location}
+            mainTimezoneUtcOffset={utcOffset}
+          />
+        ))}
+      </div>
       {clocks.length < 4 && (
         <>
           <IconButton onClick={() => setIsAddModalOpen(true)}>

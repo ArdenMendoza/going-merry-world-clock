@@ -1,11 +1,10 @@
 import { Card } from "@mui/material";
 import React from "react";
-// import {} from '@mui/styles'
 
 export class ClockModel {
   constructor(
-    public area: string | null,
-    public location: string | null,
+    public area: string,
+    public location: string,
     public region?: string,
     public shortLabel?: string
   ) {}
