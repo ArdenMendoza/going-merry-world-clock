@@ -73,7 +73,7 @@ export const ClockTile = ({
 
   const mainTimeZoneDiff = (details.utcOffset ?? 0) - mainTimezoneUtcOffset;
 
-  const height = "10em";
+  const height = "15em";
   const width = "20em";
   const cardStyles = {
     margin: "10px 0px 10px 0px",
@@ -88,13 +88,30 @@ export const ClockTile = ({
   return liveTime ? (
     <Card style={cardStyles}>
       <div
-        style={{ flex: 1 }}
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
         onMouseEnter={() => setIsDeleteShown(true)}
         onMouseLeave={() => setIsDeleteShown(false)}
       >
-        <div>{location.replace("_", " ")}</div>
-        <div>{shortLabel}</div>
-        {liveTime && <div>{liveTime.toLocaleTimeString("en-GB")}</div>}
+        <div style={{ marginBottom: 20, textAlign: 'center' }}>
+          <div
+            style={{
+              fontWeight: "bolder",
+              fontSize: "1.5em",
+            }}
+          >
+            {location.replace("_", " ")}
+          </div>
+          <div style={{ height: 0 }}>{shortLabel}</div>
+        </div>
+
+        <div style={{ fontSize: "2em", margin: "1em" }}>
+          {liveTime.toLocaleTimeString("en-GB")}
+        </div>
         <div>{details.abbreviation}</div>
         {`${Math.abs(mainTimeZoneDiff)} ${
           Math.abs(mainTimeZoneDiff) > 1 ? "hours" : "hour"
