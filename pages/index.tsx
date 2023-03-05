@@ -1,5 +1,6 @@
 import { AddCircleOutline } from "@mui/icons-material";
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -9,6 +10,7 @@ import {
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from "@mui/material";
 import type { NextPage } from "next";
 import React from "react";
@@ -42,23 +44,29 @@ const Home: NextPage = () => {
   }, []);
 
   React.useEffect(() => {
+    let intervalId: any;
     if (fetchedMainTime) {
       let seconds = 1;
-      setInterval(() => {
+      intervalId = setInterval(() => {
         let updatedTime = new Date(fetchedMainTime.toString());
         updatedTime.setSeconds(updatedTime.getSeconds() + seconds);
         setLiveTime(updatedTime);
         seconds++;
       }, 1000);
     }
+    return () => clearInterval(intervalId);
   }, [fetchedMainTime]);
 
   return (
     <div className={styles.container}>
-      <div>
-        <div>{location}</div>
-        {liveTime && <div>{liveTime.toLocaleTimeString("en-GB")}</div>}
-      </div>
+      <Box style={{ textAlign: "center", marginBottom: 50 }}>
+        <Typography variant={"h3"}>{location}</Typography>
+        {liveTime && (
+          <Typography variant={"h1"} style={{ fontWeight: 500 }}>
+            {liveTime.toLocaleTimeString("en-GB")}
+          </Typography>
+        )}
+      </Box>
       <div
         style={{
           display: "flex",

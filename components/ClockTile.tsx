@@ -1,4 +1,4 @@
-import { Card, IconButton, Skeleton } from "@mui/material";
+import { Box, Card, IconButton, Skeleton, Typography } from "@mui/material";
 import React from "react";
 import { Delete } from "@mui/icons-material";
 
@@ -60,24 +60,26 @@ export const ClockTile = ({
   }, []);
 
   React.useEffect(() => {
+    let intervalId: any;
     if (fetchedTime) {
       let seconds = 1;
-      setInterval(() => {
+      intervalId = setInterval(() => {
         let updatedTime = new Date(fetchedTime.toString());
         updatedTime.setSeconds(updatedTime.getSeconds() + seconds);
         setLiveTime(updatedTime);
         seconds++;
       }, 1000);
     }
+    return () => clearInterval(intervalId);
   }, [fetchedTime]);
 
   const mainTimeZoneDiff = (details.utcOffset ?? 0) - mainTimezoneUtcOffset;
 
-  const height = "15em";
+  const height = "20em";
   const width = "20em";
   const cardStyles = {
     margin: "10px 0px 10px 0px",
-    padding: "1em",
+    padding: "2em",
     height,
     width,
     display: "flex",
@@ -97,25 +99,44 @@ export const ClockTile = ({
         onMouseEnter={() => setIsDeleteShown(true)}
         onMouseLeave={() => setIsDeleteShown(false)}
       >
-        <div style={{ marginBottom: 20, textAlign: 'center' }}>
-          <div
+        <div style={{ marginBottom: 30, textAlign: "center" }}>
+          <Typography
+            variant={"h5"}
             style={{
               fontWeight: "bolder",
-              fontSize: "1.5em",
             }}
           >
             {location.replace("_", " ")}
-          </div>
-          <div style={{ height: 0 }}>{shortLabel}</div>
+          </Typography>
+          <Typography
+            variant={"subtitle1"}
+            style={{ height: 0, marginTop: "-5px", fontStyle: "italic" }}
+          >
+            {shortLabel}
+          </Typography>
         </div>
 
-        <div style={{ fontSize: "2em", margin: "1em" }}>
-          {liveTime.toLocaleTimeString("en-GB")}
-        </div>
-        <div>{details.abbreviation}</div>
-        {`${Math.abs(mainTimeZoneDiff)} ${
-          Math.abs(mainTimeZoneDiff) > 1 ? "hours" : "hour"
-        } ${mainTimeZoneDiff > 0 ? "ahead" : "behind"} of ${mainTimezoneCity}`}
+        <Box
+          style={{
+            flex: 1,
+            display: "flex",
+            flexWrap: "wrap",
+            alignContent: "center",
+          }}
+        >
+          <Typography variant={"h4"}>
+            {liveTime.toLocaleTimeString("en-GB")}
+          </Typography>
+        </Box>
+
+        <Typography variant={"h6"}>{details.abbreviation}</Typography>
+        <Typography variant={"subtitle1"}>
+          {`${Math.abs(mainTimeZoneDiff)} ${
+            Math.abs(mainTimeZoneDiff) > 1 ? "hours" : "hour"
+          } ${
+            mainTimeZoneDiff > 0 ? "ahead" : "behind"
+          } of ${mainTimezoneCity}`}
+        </Typography>
       </div>
       <div style={{ width: 0 }}>
         <IconButton
