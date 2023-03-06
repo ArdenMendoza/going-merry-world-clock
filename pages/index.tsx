@@ -15,7 +15,6 @@ import {
 import type { NextPage } from "next";
 import React from "react";
 import { ClockModel, ClockTile } from "../components/ClockTile";
-import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
   const [fetchedMainTime, setFetchedMainTime] = React.useState<
@@ -58,7 +57,7 @@ const Home: NextPage = () => {
   }, [fetchedMainTime]);
 
   return (
-    <div className={styles.container}>
+    <div>
       <Box style={{ textAlign: "center", marginBottom: 50 }}>
         <Typography variant={"h3"}>{location}</Typography>
         {liveTime && (
@@ -203,7 +202,7 @@ const AddClockDialog = ({
         </Select>
         <TextField
           id="outlined-basic"
-          label="Outlined"
+          label="Label"
           variant="outlined"
           value={newClock.shortLabel}
           inputProps={{ maxLength: 20 }}

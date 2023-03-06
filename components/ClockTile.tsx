@@ -88,7 +88,7 @@ export const ClockTile = ({
   } as React.CSSProperties;
 
   return liveTime ? (
-    <Card style={cardStyles}>
+    <Card style={cardStyles} id={'clockTile'}>
       <div
         style={{
           flex: 1,
